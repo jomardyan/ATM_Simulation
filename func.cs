@@ -1,7 +1,5 @@
 using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
 
 namespace ATM_Simulation
 {
@@ -28,20 +26,16 @@ namespace ATM_Simulation
                     if (Digits[i] * 2 > 9)
                     {
                         Digits[i] = ((Digits[i] * 2) % 10) + 1;
-
                     }
                     else
                     {
                         Digits[i] = Digits[i] * 2;
                     }
-
-
                     Console.WriteLine(Digits[i]);
 
                 }
                 foreach (int item in Digits)
                 {
-                    
                     sum = sum + item;
                 }
                 Console.WriteLine("Sum: " + sum);
