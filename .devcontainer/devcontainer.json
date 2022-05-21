@@ -25,6 +25,9 @@
 	// Comment out to connect as root instead. More info: https://aka.ms/vscode-remote/containers/non-root.
 	"remoteUser": "vscode",
 	"features": {
-		"powershell": "7.1"
+		"powershell": "7.1",
+		"github-cli": "latest",
+		"sshd": "latest",
+		"dotnet": "6.0"
 	}
 }
