@@ -3,6 +3,7 @@ using System;
 using ATM_Simulation;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -10,9 +11,10 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace ATM_Simulation.Migrations
 {
     [DbContext(typeof(ATMContext))]
-    partial class ATMContextModelSnapshot : ModelSnapshot
+    [Migration("20220522205016_aa")]
+    partial class aa
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder.HasAnnotation("ProductVersion", "6.0.5");
@@ -48,7 +50,10 @@ namespace ATM_Simulation.Migrations
                         .HasMaxLength(16)
                         .HasColumnType("TEXT");
 
-                    b.Property<int>("ClientID")
+                    b.Property<int?>("ClientID")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int>("CreditID")
                         .HasColumnType("INTEGER");
 
                     b.HasKey("CardID");
@@ -103,9 +108,7 @@ namespace ATM_Simulation.Migrations
                 {
                     b.HasOne("ATM_Simulation.Client", "Client")
                         .WithMany("CreditCard")
-                        .HasForeignKey("ClientID")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("ClientID");
 
                     b.Navigation("Client");
                 });

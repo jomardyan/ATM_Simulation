@@ -2,6 +2,7 @@ using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace ATM_Simulation;
 
@@ -32,6 +33,7 @@ public class Client
     public int ClientID { get; set; }
 
     public int Ballance { get; set; }
+
     public string ClientName { get; set; }
 
     [MaxLength(6), MinLength(4)]
@@ -39,6 +41,8 @@ public class Client
 
     public List<Transaction> Transactions { get; } = new();
     public List<Log> Logs { get; } = new();
+
+    public List<CreditCard> CreditCard { get; } = new();
 }
 
 public class Transaction
@@ -59,6 +63,7 @@ public class Log
     public int LogID { get; set; }
 
     public string LogMessage { get; set; }
+    [ForeignKey("ClientID")]
     public int ClientID { get; set; }
     public Client Client { get; set; }
 }
@@ -71,6 +76,6 @@ public class CreditCard
     [MaxLength(16), MinLength(16)]
     public string CardNumber { get; set; }
 
-    public int CreditID { get; set; }
+    public int ClientID { get; set; }
     public Client Client { get; set; }
 }

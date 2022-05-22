@@ -1,4 +1,5 @@
-﻿using System;
+﻿using EasyConsoleCore;
+using System;
 using System.Linq;
 using System.Text;
 
@@ -25,16 +26,29 @@ namespace ATM_Simulation
 
         public static bool CardCheck(string CardNumber)
         {
-            int sum = 0;
-            StringBuilder st = new StringBuilder();
+            CardNumber = CardNumber.Replace("-", "").Replace(" ", "");
+            
 
-            if (CardNumber.Length == 16)
+            int sum = 0;
+            bool x;
+            StringBuilder st = new StringBuilder();
+            if (CardNumber.Length > 16 | CardNumber.Length < 16)
+            {
+                Output.WriteLine(ConsoleColor.Red, "Card number lenght must consist 16 character, please try again");
+                return false;
+            }
+            else
             {
                 char[] CardArray = CardNumber.ToArray();
                 var Digits = new int[16];
                 for (int i = 0; i < CardArray.Length; i++)
                 {
                     Digits[i] = Convert.ToInt32(CardArray[i]) - '0';
+                    if (Digits[i] > 9)
+                    {
+                        return false;
+                    }
+                    
                     //Console.WriteLine(CardNumber[i]);
                 }
 
@@ -54,39 +68,63 @@ namespace ATM_Simulation
                 {
                     sum = sum + item;
                 }
-                System.Console.WriteLine(st);
-                Console.WriteLine("Sum: " + sum);
+                x = sum % 10 == 0 ? true : false;
+                if (x == true)
+                {
+                    using var db = new ATMContext();
+
+                    var card = db.CreditCards
+                    .Where(x => x.CardNumber == CardNumber)
+                    .OrderBy(b => b.ClientID)
+                    .FirstOrDefault();
+
+                   
+                    Output.WriteLine(ConsoleColor.Green, "Coreect card!");
+                    Output.WriteLine("You Entered: {0}", CardNumber);
+                    //Output.WriteLine("Checking PIN..");
+                    var cb = PinCheck(Input.ReadInt("Enter PIN: ", 1000, 999999), CardNumber);
+                }
             }
-            bool x = sum % 10 == 0 ? true : false;
+
             return x;
         }
 
-        public static void Logger(Client cl, string logMesage)
+        public static void Logger(int cl, string logMesage)
         {
             using var db = new ATMContext();
 
-            Log log = new() { Client = cl, ClientID = cl.ClientID, LogMessage = logMesage };
+            Log log = new() { ClientID = cl, LogMessage = logMesage };
 
-            db.Add(cl);
+            db.Add(log);
             db.SaveChanges();
             db.Dispose();
         }
 
-        public static bool PinCheck(int pin, int clientID)
+        public static bool PinCheck(int pin, string cardNumber)
         {
             bool check = false;
             using var db = new ATMContext();
+            var card = db.CreditCards
+                .Where(x => x.CardNumber == cardNumber)
+                .OrderBy(b => b.ClientID)
+                .FirstOrDefault();
+
             var client = db.Clients
-                .Where(x => x.ClientID == clientID)
+                .Where(x => x.ClientID == card.ClientID)
                 .OrderBy(b => b.ClientID)
                 .FirstOrDefault();
 
             if (client.PIN == pin)
             {
                 check = true;
-                Logger(client, $"DATE {DateTime.Now} Pin Has been provided correctly.");
+                Logger(client.ClientID, $"DATE {DateTime.Now} Pin Has been provided correctly.");
             }
-            Logger(client, $"DATE {DateTime.Now} Pin Has been provided incorectly.");
+            else
+            {
+                Output.WriteLine(ConsoleColor.Red, "WRONG PIN!");
+                Logger(client.ClientID, $"DATE {DateTime.Now} Pin Has been provided incorectly.");
+            }
+            
 
             db.Dispose();
             return check;
