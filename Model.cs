@@ -2,7 +2,6 @@ using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
 
 namespace ATM_Simulation;
 
@@ -13,7 +12,6 @@ public class ATMContext : DbContext
     public DbSet<Log> Log { get; set; }
     public DbSet<CreditCard> CreditCards { get; set; }
     public string DbPath { get; }
-
 
     public ATMContext()
     {
@@ -32,8 +30,10 @@ public class Client
 {
     [Key]
     public int ClientID { get; set; }
+
     public int Ballance { get; set; }
     public string ClientName { get; set; }
+
     [MaxLength(6), MinLength(4)]
     public int PIN { get; set; }
 
@@ -41,32 +41,36 @@ public class Client
     public List<Log> Logs { get; } = new();
 }
 
-
-
 public class Transaction
 {
     [Key]
     public int TransactionID { get; set; }
+
     public int Amount { get; set; }
     public DateTime TransactionDate { get; set; }
 
     public int ClientID { get; set; }
     public Client Client { get; set; }
 }
+
 public class Log
 {
     [Key]
     public int LogID { get; set; }
+
     public string LogMessage { get; set; }
     public int ClientID { get; set; }
     public Client Client { get; set; }
 }
+
 public class CreditCard
 {
     [Key]
     public int CardID { get; set; }
+
     [MaxLength(16), MinLength(16)]
     public string CardNumber { get; set; }
+
     public int CreditID { get; set; }
     public Client Client { get; set; }
-    }
+}

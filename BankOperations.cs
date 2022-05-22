@@ -1,11 +1,28 @@
-using System;
+﻿using System;
 using System.Linq;
 using System.Text;
 
 namespace ATM_Simulation
 {
-    public static class Funcs
+    internal static class BankOperations
     {
+        public static void AddClient(Client cl)
+        {
+            using var db = new ATMContext();
+
+            db.Add(cl);
+            db.SaveChanges();
+            db.Dispose();
+        }
+
+        public static void AddTransaction(Transaction tr)
+        {
+            using var db = new ATMContext();
+            db.Add(tr);
+            db.SaveChanges();
+            db.Dispose();
+        }
+
         public static bool CardCheck(string CardNumber)
         {
             int sum = 0;
@@ -44,6 +61,17 @@ namespace ATM_Simulation
             return x;
         }
 
+        public static void Logger(Client cl, string logMesage)
+        {
+            using var db = new ATMContext();
+
+            Log log = new() { Client = cl, ClientID = cl.ClientID, LogMessage = logMesage };
+
+            db.Add(cl);
+            db.SaveChanges();
+            db.Dispose();
+        }
+
         public static bool PinCheck(int pin, int clientID)
         {
             bool check = false;
@@ -56,14 +84,21 @@ namespace ATM_Simulation
             if (client.PIN == pin)
             {
                 check = true;
+                Logger(client, $"DATE {DateTime.Now} Pin Has been provided correctly.");
             }
-            Log log = new() { Client = client, LogMessage = $"DATE {DateTime.Now} Pin Has been Checked, " };
-            db.Add(log);
+            Logger(client, $"DATE {DateTime.Now} Pin Has been provided incorectly.");
 
-            db.SaveChanges();
             db.Dispose();
             return check;
         }
 
+        public static void RemoveClient(Client cl)
+        {
+            using var db = new ATMContext();
+
+            db.Remove(cl);
+            db.SaveChanges();
+            db.Dispose();
+        }
     }
 }
