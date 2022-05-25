@@ -27,7 +27,6 @@ namespace ATM_Simulation
         public static bool CardCheck(string CardNumber)
         {
             CardNumber = CardNumber.Replace("-", "").Replace(" ", "");
-            
 
             int sum = 0;
             bool x;
@@ -48,7 +47,7 @@ namespace ATM_Simulation
                     {
                         return false;
                     }
-                    
+
                     //Console.WriteLine(CardNumber[i]);
                 }
 
@@ -78,11 +77,22 @@ namespace ATM_Simulation
                     .OrderBy(b => b.ClientID)
                     .FirstOrDefault();
 
-                   
                     Output.WriteLine(ConsoleColor.Green, "Coreect card!");
                     Output.WriteLine("You Entered: {0}", CardNumber);
                     //Output.WriteLine("Checking PIN..");
+
                     var cb = PinCheck(Input.ReadInt("Enter PIN: ", 1000, 999999), CardNumber);
+                    if (cb == true)
+                    {
+                        Output.WriteLine(ConsoleColor.Green, "Correct PIN");
+                        return true;
+                    }
+                    else
+                    {
+                        Output.WriteLine(ConsoleColor.DarkRed, "Wrong PIN");
+
+                        return false;
+                    }
                 }
             }
 
@@ -104,27 +114,35 @@ namespace ATM_Simulation
         {
             bool check = false;
             using var db = new ATMContext();
-            var card = db.CreditCards
-                .Where(x => x.CardNumber == cardNumber)
-                .OrderBy(b => b.ClientID)
-                .FirstOrDefault();
-
-            var client = db.Clients
-                .Where(x => x.ClientID == card.ClientID)
-                .OrderBy(b => b.ClientID)
-                .FirstOrDefault();
-
-            if (client.PIN == pin)
+            try
             {
-                check = true;
-                Logger(client.ClientID, $"DATE {DateTime.Now} Pin Has been provided correctly.");
+                var card = db.CreditCards
+                    .Where(x => x.CardNumber == cardNumber)
+                    .OrderBy(b => b.ClientID)
+                    .FirstOrDefault();
+                if (card != null)
+                {
+                    var client = db.Clients
+                        .Where(x => x.ClientID == card.ClientID)
+                        .OrderBy(b => b.ClientID)
+                        .FirstOrDefault();
+
+                    if (client.PIN == pin)
+                    {
+                        check = true;
+                        Logger(client.ClientID, $"DATE {DateTime.Now} Pin Has been provided correctly.");
+                    }
+                    else
+                    {
+                        Output.WriteLine(ConsoleColor.Red, "WRONG PIN!");
+                        Logger(client.ClientID, $"DATE {DateTime.Now} Pin Has been provided incorectly.");
+                    }
+                }
             }
-            else
+            catch (Exception ex)
             {
-                Output.WriteLine(ConsoleColor.Red, "WRONG PIN!");
-                Logger(client.ClientID, $"DATE {DateTime.Now} Pin Has been provided incorectly.");
+                Console.WriteLine(ex.Message);
             }
-            
 
             db.Dispose();
             return check;

@@ -9,9 +9,6 @@ namespace ATM_Simulation
         {
             System.Console.WriteLine("Welcome GTX ATM Terminal!");
             string input = Input.ReadString("Please enter a card number:");
-
-
-
             var a = BankOperations.CardCheck(input);
 
             while (a==false)
@@ -20,6 +17,7 @@ namespace ATM_Simulation
                 {
                     string input2 = Input.ReadString("Please enter a valid card number:");
                     a = BankOperations.CardCheck(input2);
+                   
                     
                 }
                 catch (Exception e)
@@ -27,6 +25,11 @@ namespace ATM_Simulation
                     Console.WriteLine(e);
                 }
             }
+            if (a)
+            {
+                Console.WriteLine("True");
+            }
+            
 
             Console.ReadLine();
         }
