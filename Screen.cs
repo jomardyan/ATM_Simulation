@@ -1,4 +1,6 @@
-﻿namespace ATM_Simulation
+﻿using System.CommandLine; 
+
+namespace ATM_Simulation
 {
     internal class Screen
     {
